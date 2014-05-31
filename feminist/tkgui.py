@@ -149,7 +149,7 @@ class Application(Frame):
         self.haltbut.grid(row=11,column=0,columnspan=2,sticky=N+S+W+E)
         #self.haltbut.config(width=17)
         #PLOTTING
-        self.plotbut = Button(self, text="PLOT", command=self.an.plotPdf)
+        self.plotbut = Button(self, text="PLOT", command=self.an.execution.plotPdf)
         self.plotbut.grid(row=12,column=0,columnspan=2,sticky=N+S+W+E)
         #self.plotbut.config(width=17)
         #self.met=progress.Meter(self,relief='ridge', bd=3,width=250)

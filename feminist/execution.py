@@ -7,6 +7,7 @@ import shutil
 import atexit
 import imp
 import re
+from subprocess import call
 from numpy import zeros,dtype,float64
 
 class Execution:
@@ -16,6 +17,7 @@ class Execution:
         self.logFile = None
         self.stressFile = None
         self.displacementFile = None
+        self.plotFile = None
         self.silent = False
         self.verbose = False
         self.interactive = False
@@ -76,7 +78,9 @@ class Execution:
                             #type=argparse.FileType('w'))
         parser.add_argument('-d', '--displacement-file', default='default_disp.dat',
                             type=argparse.FileType('w'))
-        parser.add_argument('-p', '--stress-file', default='default_stre.dat',
+        parser.add_argument('-u', '--stress-file', default='default_stre.dat',
+                            type=argparse.FileType('w'))
+        parser.add_argument('-p', '--plot-file', default='default.ps',
                             type=argparse.FileType('w'))
         parser.add_argument('-n', '--number-of-elements', default='10', type=int)
         parser.add_argument('-t', '--timestep', default='0.1', type=float)
@@ -103,6 +107,7 @@ class Execution:
         #self.logFile = os.path.abspath(args.log_file.name)
         self.stressFile = os.path.abspath(args.stress_file.name)
         self.displacementFile = os.path.abspath(args.displacement_file.name)
+        self.plotFile = os.path.abspath(args.plot_file.name)
 
         #import pdb; pdb.set_trace()
         self.constitutiveDir = args.constitutive_dir
@@ -154,6 +159,57 @@ class Execution:
         except:
             self.const_update = False
 
+    def plotToWindow(self, stressFile=None):
+        if not stressFile:
+            stressFile = self.stressFile
+        commands = ""
+        commands += "set terminal X11 size 1300 400;"
+        commands += "set key rmargin;"
+        commands += "set multiplot;"
+        commands += "set lmargin at screen 0.025;"
+        commands += "set rmargin at screen 0.325;"
+        commands += "set xlabel 'Time';"
+        commands += "set ylabel 'Strain';"
+        commands += "plot \'%s\' u 1:2 w l;"% stressFile
+        commands += "set lmargin at screen 0.35;"
+        commands += "set rmargin at screen 0.65;"
+        commands += "set ylabel 'Stress';"
+        commands += "plot \'%s\' u 1:3 w l;"% stressFile
+        commands += "set lmargin at screen 0.675;"
+        commands += "set rmargin at screen 0.975;"
+        commands += "set xlabel 'Strain';"
+        commands += "plot \'%s\' u 2:3 w l;"% stressFile
+        commands += "unset multiplot;"
+
+        call(["gnuplot", "-p", "-e", commands])
+
+
+#set output '| ps2pdf -dCompatibilityLevel=1.4 -dPDFSETTINGS=/prepress - '''+self.ofilebase+'''_plot.pdf;\
+
+    def plotPdf(self, stressFile = None, plotFile = None):
+        if not stressFile:
+            stressFile = self.stressFile
+
+        if not plotFile:
+            plotFile = self.plotFile
+
+        if not self.silent:
+            print('Plotting to file %s'%plotFile)
+
+        commands = ""
+        commands += "set term postscript landscape enhanced color;"
+        commands += "set output \'%s\';" % plotFile
+        commands += "set lmargin;"
+        commands += "set rmargin;"
+        commands += "set xlabel \'Time\';"
+        commands += "set ylabel \'Strain\';"
+        commands += "plot \'%s\' u 1:2 w l lw 3 lt 1;" % stressFile
+        commands += "set ylabel \'Stress\';"
+        commands += "plot \'%s\' u 1:3 w l lw 3 lt 1;" % stressFile
+        commands += "set xlabel \'Strain\';"
+        commands += "plot \'%s\' u 2:3 w l lw 3 lt 1;" % stressFile
+
+        call(["gnuplot", "-p", "-e", commands])
 
 class FullPaths(argparse.Action):
     """Expand user- and relative-paths"""

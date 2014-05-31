@@ -10,3 +10,4 @@ setConstitutiveParameterValues([200,3000])
 
 solve()
 plot()
+plotPdf(plotFile='omg.ps')

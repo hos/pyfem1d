@@ -42,7 +42,11 @@ def solve():
 
 def plot(stressFile=None):
     '''Plot the output stress file using gnuplot. optional argument: stressFile'''
-    m.an.plotToWindow(stressFile=None)
+    m.an.execution.plotToWindow(stressFile=stressFile)
+
+def plotPdf(stressFile=None, plotFile=None):
+    '''Plot the output stress file to a pdf file using gnuplot. optional arguments: stressFile, plotFile'''
+    m.an.execution.plotPdf(stressFile=stressFile, plotFile=plotFile)
 
 def setLoading(val):
     '''Set loading function with setLoading(stringVal). example: setLoading('triangle')'''

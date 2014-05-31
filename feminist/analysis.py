@@ -195,45 +195,4 @@ class Analysis:
             #print >>ofile,' stre.dat : Time-Strain-Stress data of Element # %i'%(self.o_elem)
             #print >>ofile,' -----------------------------------------------'
 
-    def plotToWindow(self, stressFile=None):
-        if not stressFile:
-            stressFile = self.execution.stressFile
-        commands = ""
-        commands += "set terminal X11 size 1300 400;"
-        commands += "set key rmargin;"
-        commands += "set multiplot;"
-        commands += "set lmargin at screen 0.025;"
-        commands += "set rmargin at screen 0.325;"
-        commands += "set xlabel 'Time';"
-        commands += "set ylabel 'Strain';"
-        commands += "plot \'%s\' u 1:2 w l;"% stressFile
-        commands += "set lmargin at screen 0.35;"
-        commands += "set rmargin at screen 0.65;"
-        commands += "set ylabel 'Stress';"
-        commands += "plot \'%s\' u 1:3 w l;"% stressFile
-        commands += "set lmargin at screen 0.675;"
-        commands += "set rmargin at screen 0.975;"
-        commands += "set xlabel 'Strain';"
-        commands += "plot \'%s\' u 2:3 w l;"% stressFile
-        commands += "unset multiplot;"
-        #print commands
-        os.system('gnuplot -p -e "'+commands+'"')
-
-#set output '| ps2pdf -dCompatibilityLevel=1.4 -dPDFSETTINGS=/prepress - '''+self.ofilebase+'''_plot.pdf;\
-
-    def plotPdf(self):
-        print('Plotting to PDF')
-        commands = '''set term postscript landscape enhanced color;'''\
-'set output \''+self.ofilebase+'_plot.ps\';'\
-'''set lmargin;\
-set rmargin;\
-set xlabel 'Time';\
-set ylabel 'Strain';'''\
-'plot \''+self.ofilebase+'_stre.dat\' u 1:2 w l lw 3 lt 1;'\
-'set ylabel \'Stress\';'\
-'plot \''+self.ofilebase+'_stre.dat\' u 1:3 w l lw 3 lt 1;'\
-'set xlabel \'Strain\';'\
-'plot \''+self.ofilebase+'_stre.dat\' u 2:3 w l lw 3 lt 1;'
-
-        os.system('gnuplot -p -e "'+commands+'"')
 
