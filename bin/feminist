@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+from __future__ import division, print_function, absolute_import
+
+#import feminist as fem
+import Tkinter
+import feminist.tkgui
+import feminist.analysis
+
+an = feminist.analysis.Analysis()
+an.execution.parseCmd()
+
+if not an.execution.silent:
+    an.execution.printHeader()
+
+
+from feminist.ipython_wrappers import *
+
+# Execute the input file:
+
+if an.execution.inputFile:
+    execfile(an.execution.inputFile)
+
+if an.execution.gui:
+    feminist.tkgui.startGui(an)
+
+if an.execution.interactive or (not an.execution.inputFile and not an.execution.gui):
+    an.execution.ipShell()
+
+
