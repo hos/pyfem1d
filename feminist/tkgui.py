@@ -3,250 +3,227 @@ from __future__ import division, print_function, absolute_import
 from Tkinter import *
 from multiprocessing import Process
 import os
-#import progress
 
-boxwidth = 15
+boxWidth = 15
 
-class optbox(OptionMenu):
-    def __init__(self,parent,fun,r,c):
-        self.val=StringVar()
-        self.val.set(fun.listt[fun.defaultind])
-        self.box = OptionMenu(parent, self.val, *fun.listt)
-        self.box.grid(row=r,column=c,sticky=N+S+E+W)
-        self.box.config(width=boxwidth,anchor=W)
+class OptionBox(OptionMenu):
+    def __init__(self,parent,function,r,c):
+        self.value = StringVar()
+        self.value.set(function.listt[function.defaultind])
+        self.box = OptionMenu(parent, self.value, *function.listt)
+        self.box.grid(row = r, column = c, sticky = N+S+E+W)
+        self.box.config(width = boxWidth, anchor = W)
     def get(self):
-        return self.val.get()
+        return self.value.get()
 
-class optbox2(OptionMenu):
-    def __init__(self,parent,outerind,listt,vallist,r,c,ind=0):
-        self.val=StringVar()
-        self.val.set(listt[ind])
-        self.box = OptionMenu(parent, self.val, *listt)
-        self.listt=listt
-        self.vallist=vallist
-        self.ind=ind
-        self.outerind=outerind
-        self.box.grid(row=r,column=c,sticky=N+S+E+W)
-        self.box.config(width=boxwidth,anchor=W)
+
+class OptionBox2(OptionMenu):
+    def __init__(self,parent,outerind,listt,vallist,r,c,ind = 0):
+        self.value = StringVar()
+        self.value.set(listt[ind])
+        self.box = OptionMenu(parent, self.value, *listt)
+        self.listt = listt
+        self.vallist = vallist
+        self.ind = ind
+        self.outerind = outerind
+        self.box.grid(row = r, column = c, sticky = N+S+E+W)
+        self.box.config(width = boxWidth, anchor = W)
+
     def get(self):
-        return self.val.get()
-    def getind(self):
+        return self.value.get()
+
+    def getIndex(self):
         for i,j in zip(range(len(self.listt)),self.listt):
-            if self.get()==j:
+            if self.get() == j:
                 return i
+
     def getcurrval(self):
-        return self.vallist[self.getind()]
+        return self.vallist[self.getIndex()]
 
 
-class parframe(Frame):
-    def __init__(self,parent,fun):
-        if type(fun)!=type('a'):
+class ParameterFrame(Frame):
+    def __init__(self,parent,function):
+        if type(function) != type('a'):
             raise Exception('Error: pass the module name as a string')
         self.parent = parent
         try:
             self.parent = self.parent.parent
         except:
             pass
-        self.fun=fun  #string
+        self.function = function  #string
 
         Frame.__init__(self, parent)
         self.createwidgets()
 
     def createwidgets(self):
-        self.labels=[]; self.entries=[]; self.optboxi=[]
-        list2 = self.parent.an.execution.__dict__[self.fun].getMetavars()
-        size = self.parent.an.execution.__dict__[self.fun].size
+        self.labels = []; self.entries = []; self.optionBoxList = []
+        list2 = self.parent.an.execution.__dict__[self.function].getMetavars()
+        size = self.parent.an.execution.__dict__[self.function].size
         for n in range(size):
-            optboxBool = False
-            if hasattr(self.parent.an.execution.__dict__[self.fun], 'parameters'):
-                if self.parent.an.execution.__dict__[self.fun].parameters[n].options:
-                    optboxBool = True
-            if optboxBool:
-                variable = self.parent.an.execution.__dict__[self.fun].parameters[n].variable
-                self.optboxi.append(optbox2(self,n,\
-                                            self.parent.an.execution.__dict__[self.fun].parameters[n].options,\
-                                            self.parent.an.execution.__dict__[self.fun].__dict__[variable]\
-                                            ,n,1))
+            optionBoxBool = False
+            if hasattr(self.parent.an.execution.__dict__[self.function], 'parameters'):
+                if self.parent.an.execution.__dict__[self.function].parameters[n].options:
+                    optionBoxBool = True
+            if optionBoxBool:
+                variable = self.parent.an.execution.__dict__[self.function].parameters[n].variable
+                self.optionBoxList.\
+                    append(OptionBox2(self,n,\
+                                      self.parent.an.execution.__dict__[self.function].parameters[n].options,\
+                                      self.parent.an.execution.__dict__[self.function].__dict__[variable]\
+                                      ,n,1))
             else:
-                self.entries.append(makent(self,n,1))
+                self.entries.append(makeEntry(self,n,1))
 
-            self.labels.append(makel(self,n,0,list2[n]))
+            self.labels.append(makeLabel(self,n,0,list2[n]))
 
-        self.grid(columnspan=2,rowspan=size)
+        self.grid(columnspan = 2,rowspan = size)
 
     def give(self):
-        ent=[]
-        newpars=[]
-        entind=0
-        size = self.parent.an.execution.__dict__[self.fun].size
+        entry = []
+        newParameters = []
+        entind = 0
+        size = self.parent.an.execution.__dict__[self.function].size
         for i in range(size):
-            dummy=0
-            for j in self.optboxi:
-                if j.outerind==i:
-                  newpars.append(j.getcurrval())
-                  dummy=1
+            dummy = 0
+            for j in self.optionBoxList:
+                if j.outerind == i:
+                  newParameters.append(j.getcurrval())
+                  dummy = 1
                   break
-            if dummy==1:
+            if dummy == 1:
                 continue
-            newpars.append(float(self.entries[entind].get()))
-            entind+=1
-        # for i in self.optboxi:
-        #     vars(varss(self.fun))[i.name]=i.getcurrval()
+            newParameters.append(float(self.entries[entind].get()))
+            entind += 1
+        # for i in self.optionBoxList:
+        #     vars(varss(self.function))[i.name] = i.getcurrval()
 
         # for i in self.entries:
-        #     ent.append(float(i.get()))
-        self.parent.an.execution.__dict__[self.fun].setParameterValues(newpars)
+        #     entry.append(float(i.get()))
+        self.parent.an.execution.__dict__[self.function].setParameterValues(newParameters)
+
     def take(self):
-        for i,j in zip(self.parent.an.execution.__dict__[self.fun].getParameterValues(),self.entries):
+        for i,j in zip(self.parent.an.execution.__dict__[self.function].getParameterValues(),self.entries):
             j.insert(0,str(i))
 
 
-class funframe(Frame):
-    def __init__(self,parent,fun):
+class FunctionFrame(Frame):
+    def __init__(self,parent,function):
         self.parent = parent
         Frame.__init__(self, parent)
-        self.fun=fun
+        self.function = function
         self.createwidgets()
-        self.box.val.trace('w',self.loadfun)
-        self.loadfun()
-    def createwidgets(self):
-        self.box=optbox(self,self.parent.an.execution.__dict__[self.fun],0,1)
-        self.lbl=makel(self,0,0,self.parent.an.execution.__dict__[self.fun].modname)
+        self.box.value.trace('w',self.loadFunction)
+        self.loadFunction()
 
-    def loadfun(self,*args):
-        size = self.parent.an.execution.__dict__[self.fun].size
-        self.parent.an.execution.__dict__[self.fun].setFunction(self.box.get())
-        if hasattr(self,'parfr'):
-            self.parfr.destroy()
-        self.parfr=parframe(self,self.fun)
-        self.grid(rowspan=size+1)
-        self.parfr.grid(row=1,column=0)
+    def createwidgets(self):
+        self.box = OptionBox(self,self.parent.an.execution.__dict__[self.function],0,1)
+        self.label = makeLabel(self,0,0,self.parent.an.execution.__dict__[self.function].modname)
+
+    def loadFunction(self,*args):
+        size = self.parent.an.execution.__dict__[self.function].size
+        self.parent.an.execution.__dict__[self.function].setFunction(self.box.get())
+        if hasattr(self,'parameterFrame'):
+            self.parameterFrame.destroy()
+        self.parameterFrame = ParameterFrame(self,self.function)
+        self.grid(rowspan = size+1)
+        self.parameterFrame.grid(row = 1,column = 0)
         self.take()
+
     def give(self):
-        self.parfr.give()
+        self.parameterFrame.give()
+
     def take(self):
-        self.parfr.take()
+        self.parameterFrame.take()
 
 
 class Application(Frame):
-
-    def createWidgets(self):
-        self.mainparframe=parframe(self,'mainpar')
-        self.mainparframe.grid(row=0,column=0)
-
-        self.labels=[]
-        self.ldict={'r':[],'c':[],'text':[]}
-        self.ldict['r'][:]=[3]
-        self.ldict['c'][:]=[0]
-        self.ldict['text'][:]=['BC type']
-
-        #SIMULATION BUTTON
-        self.simbut = Button(self, text="RUN", command=self.runsim)
-        self.simbut.grid(row=10,column=0,columnspan=2,sticky=N+S+W+E)
-        #self.simbut.config(width=17)
-        #TERMINATION BUTTON
-        self.haltbut = Button(self, text="HALT", command=self.halt)
-        self.haltbut.grid(row=11,column=0,columnspan=2,sticky=N+S+W+E)
-        #self.haltbut.config(width=17)
-        #PLOTTING
-        self.plotbut = Button(self, text="PLOT", command=self.an.execution.plotPdf)
-        self.plotbut.grid(row=12,column=0,columnspan=2,sticky=N+S+W+E)
-        #self.plotbut.config(width=17)
-        #self.met=progress.Meter(self,relief='ridge', bd=3,width=250)
-        #self.met.grid(row=10,column=0)
-
-        self.consframe=funframe(self,'constitutive')
-        self.consframe.grid(row=0,column=3)
-        self.loadframe=funframe(self,'load')
-        self.loadframe.grid(row=0,column=4)
-
-    def takepars(self):
-        self.mainparframe.take()
-        #self.consframe.take()
-        #self.loadframe.take()
-
-    def givepars(self):
-        #import cfg as cf
-        #parfrgive(self.consframe.parfr,cf.constitutive)
-        #parfrgive(self.loadframe.parfr,cf.loading)
-        #parfrgive(self.mainparframe,cf)
-        self.mainparframe.give()
-        self.consframe.give()
-        self.loadframe.give()
-
-
-        #bctext=self.bcbox.get()
-        #cf.bctype=int(bctext[0])
-        #updatevars()
-
-    def runsim(self):
-        #progval(self.met,cf.t/cf.tmax)
-
-        self.givepars()
-        #global p,p2
-        self.p.append(Process(target=self.sim))
-        self.p[-1].start()
-        #p2 = Process(target=self.progval,args=(self.met,cf.t/cf.tmax))
-        #p2.start()
-        #self.progval(self.met,0)
-    def sim(self):
-        #import cProfile
-        #cProfile.run('self.an.solve()')
-        self.an.solve()
-        self.an.plotToWindow()
-
-
-    def halt(self):
-        for i in self.p:
-            i.terminate()
-        #p2.terminate()
-        print('================HALT===============')
-
-
-
-    def __init__(self, analysis, master=None):
-        #cf.constest() #Test for the constitutive equations
-        #self.an = analysis.Analysis()
+    def __init__(self, analysis, master = None):
         self.an = analysis
         Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
-        self.takepars()
-        self.p=[]
+        self.takeParameters()
+        self.processes = []
 
-def startGui(an):
+    def createWidgets(self):
+        self.mainparFrame = ParameterFrame(self,'mainpar')
+        self.mainparFrame.grid(row = 0,column = 0)
+
+        self.labels = []
+        self.ldict = {'r':[],'c':[],'text':[]}
+        self.ldict['r'][:] = [3]
+        self.ldict['c'][:] = [0]
+        self.ldict['text'][:] = ['BC type']
+
+        # Simulation button
+        self.solveButton = Button(self, text = "Run", command = self.startSolution)
+        self.solveButton.grid(row = 10,column = 0,columnspan = 2,sticky = N+S+W+E)
+        #self.solveButton.config(width = 17)
+
+        # Termination button
+        self.haltButton = Button(self, text = "Halt", command = self.halt)
+        self.haltButton.grid(row = 11,column = 0,columnspan = 2,sticky = N+S+W+E)
+        #self.haltButton.config(width = 17)
+
+        # Plotting
+        self.plotButton = Button(self, text = "Plot", command = self.an.execution.plotPdf)
+        self.plotButton.grid(row = 12,column = 0,columnspan = 2,sticky = N+S+W+E)
+        #self.plotButton.config(width = 17)
+        #self.met = progress.Meter(self,relief = 'ridge', bd = 3,width = 250)
+        #self.met.grid(row = 10,column = 0)
+
+        self.constFrame = FunctionFrame(self,'constitutive')
+        self.constFrame.grid(row = 0,column = 3)
+        self.loadFrame = FunctionFrame(self,'load')
+        self.loadFrame.grid(row = 0,column = 4)
+
+    def takeParameters(self):
+        self.mainparFrame.take()
+        #self.constFrame.take()
+        #self.loadFrame.take()
+
+    def giveParameters(self):
+        self.mainparFrame.give()
+        self.constFrame.give()
+        self.loadFrame.give()
+
+    def startSolution(self):
+        self.giveParameters()
+        self.processes.append(Process(target = self.solve))
+        self.processes[-1].start()
+
+    def solve(self):
+        #import cProfile
+        #cProfile.run('self.an.solve()')
+        self.an.solve()
+        self.an.execution.plotToWindow()
+
+    def halt(self):
+        for i in self.processes:
+            i.terminate()
+        print('== Solution halted ==')
+
+
+def guiStarterHandle(an):
     root = Tk()
-    app = Application(an, master=root)
+    app = Application(an, master = root)
     app.mainloop()
     #root.destroy()
 
-def makent(parent,r,c):
-    ent=Entry(parent)
-    ent.grid(row=r,column=c,sticky=N+S+E+W)
-    ent.config(width=boxwidth)
-    return ent
+def startGui(an):
+    guiProcess = Process(target = guiStarterHandle, args=(an,))
+    guiProcess.start()
 
-def makel(parent,r,c,textz):
-    lbl=Label(parent,text=textz,anchor=W)
-    lbl.grid(row=r,column=c,sticky=N+S+E+W)
-    lbl.config(width=boxwidth,height=1)
-    return lbl
+def makeEntry(parent,r,c):
+    entry = Entry(parent)
+    entry.grid(row = r,column = c,sticky = N+S+E+W)
+    entry.config(width = boxWidth)
+    return entry
 
-def insval(ent,var):
-    ent.insert(0,str(var))
-
-
-    # def progval(self,meter,val):
-
-    #     while val<=0.99:
-    #         print cf.t
-    #         meter.set(val)
-    #         val=float(cf.t/cf.tmax)
-    #         sleep(0.05)
-    #         print val
-    #     print val
-    #     self.terminate()
-
-
+def makeLabel(parent,r,c,textz):
+    label = Label(parent,text = textz,anchor = W)
+    label.grid(row = r,column = c,sticky = N+S+E+W)
+    label.config(width = boxWidth,height = 1)
+    return label
 
 

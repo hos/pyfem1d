@@ -18,7 +18,7 @@ def verbose():
 
 def gui():
     '''Start graphical user interface with gui()'''
-    m.tkgui.startGui(m.an)
+    m.feminist.tkgui.startGui(m.an)
 
 def dt(val):
     '''Set timestep size with dt(value)'''

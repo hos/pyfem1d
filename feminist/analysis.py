@@ -184,15 +184,3 @@ class Analysis:
             offs+=1
             #pdb.set_trace()
 
-    #    print '  History variables     nhist = %i'%(cf.nhist)
-    #    cf.nmate = len(cf.mate);
-    #    print '  Number of material  parameters = %i'%(cf.nmate)
-    #    for i in range(cf.nmate):
-    #        print '  mate(%i)                        = %6.4f'%(i, cf.mate[i])
-            #print >>ofile,'\n Output files:'
-            #print >>ofile,' outp.dat : General Output (Screen Copy) '
-            #print >>ofile,' disp.dat : Time-Displacement data of Node # %i'%(self.o_node)
-            #print >>ofile,' stre.dat : Time-Strain-Stress data of Element # %i'%(self.o_elem)
-            #print >>ofile,' -----------------------------------------------'
-
-

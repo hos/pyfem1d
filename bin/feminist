@@ -2,10 +2,10 @@
 
 from __future__ import division, print_function, absolute_import
 
-#import feminist as fem
 import Tkinter
 import feminist.tkgui
 import feminist.analysis
+from multiprocessing import Process
 
 an = feminist.analysis.Analysis()
 an.execution.parseCmd()
@@ -13,17 +13,18 @@ an.execution.parseCmd()
 if not an.execution.silent:
     an.execution.printHeader()
 
-
 from feminist.ipython_wrappers import *
 
-# Execute the input file:
-
+# Execute the input file if given
 if an.execution.inputFile:
     execfile(an.execution.inputFile)
 
+# Start gui if -g was used
 if an.execution.gui:
     feminist.tkgui.startGui(an)
 
+# Start interactive shell if -i was given or
+# there was neither input file nor -g
 if an.execution.interactive or (not an.execution.inputFile and not an.execution.gui):
     an.execution.ipShell()
 
