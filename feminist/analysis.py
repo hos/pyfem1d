@@ -2,6 +2,7 @@ from __future__ import division, print_function, absolute_import
 
 import sys, os
 import feminist.execution as execution_
+import feminist.feminist_cmd as cmd_
 import numpy as np
 import collections
 
@@ -9,7 +10,10 @@ class Analysis:
     '''Class to hold everythin relevant to the 1D FE analysis'''
     def __init__(self):
         self.execution = execution_.Execution()
+        self.cmdShell = cmd_.FeministShell(self)
 
+    def startShell(self):
+        self.cmdShell.cmdloop()
 
     def setRuntimeParameters(self):
         self.o_node =  self.execution.mainpar.nelem+1 #node to be written to the output

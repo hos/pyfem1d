@@ -130,19 +130,19 @@ class Execution:
 
     # IPython Stuff
 
-    def ipShellWithNamespace(self,ns):
-        '''Starts the interactive IPython shell'''
-        from IPython import embed
-        from IPython.config.loader import Config
-        cfg = Config()
-        cfg.TerminalInteractiveShell.confirm_exit = False
-        embed(config = cfg, user_ns = ns, display_banner = False)
+    #def ipShellWithNamespace(self,ns):
+        #'''Starts the interactive IPython shell'''
+        #from IPython import embed
+        #from IPython.config.loader import Config
+        #cfg = Config()
+        #cfg.TerminalInteractiveShell.confirm_exit = False
+        #embed(config = cfg, user_ns = ns, display_banner = False)
 
-    def ipShell(self):
-        '''Starts the interactive IPython shell
-        namespace defaults to __main__.__dict__'''
-        from __main__ import __dict__ as ns
-        self.ipShellWithNamespace(ns)
+    #def ipShell(self):
+        #'''Starts the interactive IPython shell
+        #namespace defaults to __main__.__dict__'''
+        #from __main__ import __dict__ as ns
+        #self.ipShellWithNamespace(ns)
 
     def update(self):
         try:
@@ -382,8 +382,6 @@ class ParameterList:
         for i in self.parameters:
             a.append(i.metavar)
         return a
-
-
 
     #def getParameterList(self):
         #pass
