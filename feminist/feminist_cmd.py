@@ -1,5 +1,7 @@
 from __future__ import division, print_function, absolute_import
-import cmd, sys
+import cmd
+import sys
+import os
 import feminist.tkgui
 
 class FeministShell(cmd.Cmd):
@@ -91,6 +93,31 @@ class FeministShell(cmd.Cmd):
 
         self.analysis.execution.plotPdf(stressFile=stressFile, plotFile=plotFile)
 
+    def do_pwd(self, arg):
+        'Prints current working directory'
+        print(self.analysis.execution.workingDirectory)
+
+    #def do_cd(self, arg):
+        #'Changes current working directory'
+
+    def do_addconstitutive(self, arg):
+        '''Add constitutive material: addconstitutive exampleMaterial.py'''
+        val, errormsg = parse_line(arg, type = str, n_args = 1)
+        if not errormsg:
+            absModulePath = os.path.join(self.analysis.execution.workingDirectory, val[0])
+            self.analysis.execution.constitutive.addModule(absModulePath)
+        else:
+            raise Exception(errormsg)
+
+    def do_addloading(self, arg):
+        '''Add loading function: addloading exampleLoading.py'''
+        val, errormsg = parse_line(arg, type = str, n_args = 1)
+        if not errormsg:
+            absModulePath = os.path.join(self.analysis.execution.workingDirectory, val[0])
+            self.analysis.execution.load.addModule(absModulePath)
+        else:
+            raise Exception(errormsg)
+
     def do_setloading(self, arg):
         '''Set loading function: setLoading triangle'''
         val, errormsg = parse_line(arg, type = str, n_args = 1)
@@ -135,11 +162,13 @@ class FeministShell(cmd.Cmd):
         #self.close()
         #with open(arg) as f:
             #self.cmdqueue.extend(f.read().splitlines())
+
     def precmd(self, line):
         line = line.lower()
         if self.file and 'playback' not in line:
             print(line, file=self.file)
         return line
+
     def close(self):
         if self.file:
             self.file.close()
@@ -153,12 +182,16 @@ class FeministShell(cmd.Cmd):
         f.close()
         for i,j in enumerate(array):
             try:
-                self.onecmd(j)
+                line = cleanLine(j)
+                if(line):
+                    #print("Executing: "+line)
+                    self.onecmd(line)
             except Exception as err:
                 raise Exception("line "+str(i)+": "+j+str(err))
 
-            #if not self.onecmd(j):
-                #print("Error in line "+str(i)+": "+j)
+
+def cleanLine(line):
+    return line.split('#')[0].strip()
 
 def parse_line(arg, n_args = None, type=int):
     'Convert a series of zero or more numbers to an argument tuple'

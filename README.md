@@ -4,6 +4,12 @@
 
 ## Installation
 
+### Dependencies
+
+* python 2.7 or higher
+* numpy
+* gnuplot
+
 To install the python package, run `install` on `setup.py` which is located
 in the project root directory
 

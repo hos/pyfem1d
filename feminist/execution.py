@@ -7,6 +7,7 @@ import shutil
 import atexit
 import imp
 import re
+import ntpath
 from subprocess import call
 from numpy import zeros,dtype,float64
 
@@ -30,6 +31,7 @@ class Execution:
         self.load = None
         self.bctype = None
         self.abspath = os.path.dirname(os.path.abspath(__file__))
+        self.workingDirectory = None
 
     def getHeader(self):
         header = ""
@@ -102,6 +104,9 @@ class Execution:
         # input file
         if args.input:
             self.inputFile = os.path.abspath(args.input.name)
+            self.workingDirectory = os.path.dirname(os.path.abspath(args.input.name))
+        else:
+            self.workingDirectory = os.getcwd()
 
         self.outputFile = os.path.abspath(args.output_file.name)
         #self.logFile = os.path.abspath(args.log_file.name)
@@ -224,33 +229,49 @@ def is_dir(dirname):
     else:
         return dirname
 
+
+def getModuleName(moduleFilePath):
+    '''Gets the module name from arbitrary paths, like
+    /a/b/module.py, module.py, module, a/module.py'''
+    moduleBasename = ntpath.basename(moduleFilePath)
+    if moduleBasename[-3:] == '.py':
+        moduleBasename = moduleBasename[:-3]
+
+    return moduleBasename
+
 #Class for the user defined functions under directories
 
 class UserDefined:
-    def __init__(self, direc, abspath):
+    def __init__(self, directory, abspath):
         #enable the defined functions in the class's namespace:
         #self.setFunction=self.setFunction
 
         #self.gett=self.gett
         #self.sett=self.sett
 
-        self.modname=direc
-        self.listt=[]
+        self.modname = directory
+        self.listt = []
         self.imp = {}
-        for module in os.listdir(direc):
+        for module in os.listdir(directory):
             if module == '__init__.py' or module[-3:] != '.py':
                 continue
-            submodule = module[:-3]
-            #print submodule
-            self.imp[submodule] = imp.load_source(submodule,os.path.join(direc,module))
-            #__import__(abspath+'/'+direc+'.'+module[:-3])
-            #__import__(direc+'.'+module[:-3])
-            self.listt.append(submodule)
+            #moduleName = module[:-3]
+            #print moduleName
+            #self.imp[moduleName] = imp.load_source(moduleName,os.path.join(directory,module))
+            #__import__(abspath+'/'+directory+'.'+module[:-3])
+            #__import__(directory+'.'+module[:-3])
+            #self.listt.append(moduleName)
+            self.addModule(os.path.join(directory, module))
         #print vars(self.imp)
-        if self.listt==[]:
-            print("Error: No valid function found in the directory:"+ self.modname)
-            self.__delete__()
+        if self.listt == []:
+            raise Exception("Error: No valid function found in the directory:"+ self.modname)
+            #self.__delete__()
         self.setDefaultIndex(0)
+
+    def addModule(self, moduleAbsPath):
+        modName = getModuleName(moduleAbsPath)
+        self.imp[modName] = imp.load_source(modName, moduleAbsPath)
+        self.listt.append(modName)
 
     def setFunction(self,function):
         valid=False
