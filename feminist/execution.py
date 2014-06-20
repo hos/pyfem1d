@@ -229,7 +229,6 @@ def is_dir(dirname):
     else:
         return dirname
 
-
 def getModuleName(moduleFilePath):
     '''Gets the module name from arbitrary paths, like
     /a/b/module.py, module.py, module, a/module.py'''
@@ -356,20 +355,17 @@ class UserDefined:
 
 class parameter:
 
-    def __init__(self,variable,metavar = None, options = None):
+    def __init__(self, variable,metavar = None, options = None):
         self.variable = variable
-        #if metavar:
-        self.metavar=metavar
-        #if options:
-        self.options=options
+        self.metavar = metavar
+        self.options = options
 
-    def setOptions(self,options):
-        self.options=options
-    def setMetavar(self,metavar):
-        self.metavar=metavar
+    def setOptions(self, options):
+        self.options = options
+    def setMetavar(self, metavar):
+        self.metavar = metavar
 
 class ParameterList:
-
 
     def __init__(self):
         self.parameters = []
@@ -381,7 +377,6 @@ class ParameterList:
         self.__dict__[variable] = value
         self.parameters.append(parameter(variable, metavar = metavar, options = options))
         self.updatesize()
-
 
     def parseArguments(self, *args):
         if len(args)>2:

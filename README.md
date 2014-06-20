@@ -2,13 +2,13 @@
 
 1d finite elements for testing material formulations
 
-## Installation
-
 ### Dependencies
 
 * python 2.7 or higher
 * numpy
 * gnuplot
+
+## Installation
 
 To install the python package, run `install` on `setup.py` which is located
 in the project root directory
@@ -109,7 +109,7 @@ Plotting to file /home/onur/default.ps
 2. Maximum time for the simulation is set to 25 time units.
 3. Number of elements is set to 10.
 4. The loading function is selected as `triangle`.
-5. Parameters for the triangle function are selected as parameter_1 = 10 and parameter_2 = 0.005. Note that you can define any loading function with any parameters for your own purposes. This is also valid for the constitutive functions for materials.
+5. Parameters for the triangle function are selected as parameter\_1 = 10 and parameter\_2 = 0.005. Note that you can define any loading function with any parameters for your own purposes. This is also valid for the constitutive functions for materials.
 6. The constitutive function is selected as `maxwell`.
 7. The parameters to the constitutive function are given the same way as the loading function. Again, note that you can define any parameter inside the specific files for materials, see the next section regarding adding new materials.
 8. The simulation is started by the `solve` command.

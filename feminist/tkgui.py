@@ -46,10 +46,11 @@ class ParameterFrame(Frame):
         if type(function) != type('a'):
             raise Exception('Error: pass the module name as a string')
         self.parent = parent
-        try:
+
+        # go up one level if the parent's parent exists
+        if hasattr(self.parent, 'parent'):
             self.parent = self.parent.parent
-        except:
-            pass
+
         self.function = function  #string
 
         Frame.__init__(self, parent)
