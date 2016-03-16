@@ -2,16 +2,16 @@ from __future__ import division, print_function, absolute_import
 import cmd
 import sys
 import os
-import feminist.tkgui
+import pyfem1d.tkgui
 
-class FeministShell(cmd.Cmd):
+class Pyfem1dShell(cmd.Cmd):
     intro = 'Type help or ? to list commands.\n'
-    prompt = 'feminist>> '
+    prompt = 'pyfem1d>> '
     file = None
 
     def __init__(self,parent):
         cmd.Cmd.__init__(self)
-        #super(FeministShell, self).__init__()
+        #super(Pyfem1dShell, self).__init__()
         self.analysis = parent
 
     def do_verbose(self, arg):
@@ -22,7 +22,7 @@ class FeministShell(cmd.Cmd):
 
     def do_gui(self, arg):
         '''Start graphical user interface'''
-        feminist.tkgui.startGui(self.analysis)
+        pyfem1d.tkgui.startGui(self.analysis)
 
     def do_dt(self, arg):
         '''Set timestep size: dt value'''

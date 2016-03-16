@@ -60,7 +60,7 @@ class Execution:
 
     def printHeader(self):
         '''Prints program header with version'''
-        print("feminist - 1d finite elements for testing material formulations")
+        print("pyfem1d - 1d finite elements for testing material formulations")
         #print(self.getHeader())
 
     def test(self):

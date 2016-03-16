@@ -1,4 +1,4 @@
-# feminist
+# pyfem1d
 
 1d finite elements for testing material formulations
 
@@ -14,26 +14,26 @@ To install the python package, run `install` on `setup.py` which is located
 in the project root directory
 
 ```
-$ cd feminist/
+$ cd pyfem1d/
 $ python setup.py install
 ```
 
-This will install the `feminist` module under `/usr/lib/python*/site-packages/feminist`, as well as the `feminist` script under `/usr/bin` which
+This will install the `pyfem1d` module under `/usr/lib/python*/site-packages/pyfem1d`, as well as the `pyfem1d` script under `/usr/bin` which
 is the primary handle for this program.
 
 ## Invocation
 
-To run feminist, type in your command line:
+To run pyfem1d, type in your command line:
 
 ```
-$ feminist
-feminist - 1d finite elements for testing material formulations
+$ pyfem1d
+pyfem1d - 1d finite elements for testing material formulations
 Type help or ? to list commands.
 
-feminist>>
+pyfem1d>>
 ```
 
-which drops you into the CLI for feminist. Here, you can type `help` to show a list of commands you can use.
+which drops you into the CLI for pyfem1d. Here, you can type `help` to show a list of commands you can use.
 
 In general, you can:
 
@@ -41,11 +41,11 @@ In general, you can:
 * give input files to be executed,
 * start the graphical user interface
 
-To see all you options regarding the invocation of feminist, type in your command line:
+To see all you options regarding the invocation of pyfem1d, type in your command line:
 
 ```
-$ feminist --help
-usage: feminist [-h] [-o OUTPUT_FILE] [-d DISPLACEMENT_FILE] [-u STRESS_FILE]
+$ pyfem1d --help
+usage: pyfem1d [-h] [-o OUTPUT_FILE] [-d DISPLACEMENT_FILE] [-u STRESS_FILE]
                 [-p PLOT_FILE] [-n NUMBER_OF_ELEMENTS] [-t TIMESTEP]
                 [-m MAXIMUM_TIME] [--constitutive-dir CONSTITUTIVE_DIR]
                 [--load-dir LOAD_DIR] [-g] [-v] [-s] [-i]
@@ -57,11 +57,11 @@ usage: feminist [-h] [-o OUTPUT_FILE] [-d DISPLACEMENT_FILE] [-u STRESS_FILE]
 * You can directly start the GUI with the `-g` flag.
 * If you have given an input file and still want to use the CLI after the file is executed, you can give the `-i` option. You can also have the CLI and GUI at the same time with `-i -g` at the same time.
 
-## Example feminist session: Using CLI commands
+## Example pyfem1d session: Using CLI commands
 
 You can list the possible commands with the command `help`.
 ```
-feminist>> help
+pyfem1d>> help
 Documented commands (type help <topic>):
 ========================================
 bctype  help   plotps           setconstitutivepars  solve  
@@ -72,17 +72,17 @@ gui     plot   setconstitutive  setloadingpars       verbose
 
 Here is an example session which fully utilizes most of the commands you need to run a simulation:
 ```
-feminist - 1d finite elements for testing material formulations
+pyfem1d - 1d finite elements for testing material formulations
 Type help or ? to list commands.
 
-feminist>> bctype 2
-feminist>> tmax 25
-feminist>> nelem 10
-feminist>> setloading triangle
-feminist>> setloadingpars 10 0.005
-feminist>> setconstitutive maxwell
-feminist>> setconstitutivepars 200 3000
-feminist>> solve
+pyfem1d>> bctype 2
+pyfem1d>> tmax 25
+pyfem1d>> nelem 10
+pyfem1d>> setloading triangle
+pyfem1d>> setloadingpars 10 0.005
+pyfem1d>> setconstitutive maxwell
+pyfem1d>> setconstitutivepars 200 3000
+pyfem1d>> solve
  Input file   : None
  Output file  : /home/onur/default_out.dat
  Stress file  : /home/onur/default_stre.dat
@@ -100,8 +100,8 @@ feminist>> solve
   > magnitude : 0.005
 
 === END OF PROCESSING ===
-feminist>> plot
-feminist>> plotps
+pyfem1d>> plot
+pyfem1d>> plotps
 Plotting to file /home/onur/default.ps
 ```
 
@@ -119,7 +119,7 @@ Plotting to file /home/onur/default.ps
 
 ## Example input File
 
-An input for feminist is composed of input lines you would normally enter in feminist's CLI. You can collect these commands in a file and run them directly for faster results.
+An input for pyfem1d is composed of input lines you would normally enter in pyfem1d's CLI. You can collect these commands in a file and run them directly for faster results.
 ```
 # ex1.txt:
 bctype 2
@@ -135,9 +135,9 @@ plot
 plotps ex1.pdf
 ```
 
-You can then execute the commands by invoking feminist with the filename without any flags,
+You can then execute the commands by invoking pyfem1d with the filename without any flags,
 ```
-$ feminist ex1.txt
+$ pyfem1d ex1.txt
 ```
 This will run through the lines and execute each line, and even plot the results into the postscript file `ex1.ps`. You can use this to your advantage in many ways; for example exploring the parameter space by batch assigning different material parameters and observing the response.
 

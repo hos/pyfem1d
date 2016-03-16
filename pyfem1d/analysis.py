@@ -1,8 +1,8 @@
 from __future__ import division, print_function, absolute_import
 
 import sys, os
-import feminist.execution as execution_
-import feminist.feminist_cmd as cmd_
+import pyfem1d.execution as execution_
+import pyfem1d.pyfem1d_cmd as cmd_
 import numpy as np
 import collections
 
@@ -10,7 +10,7 @@ class Analysis:
     '''Class to hold everythin relevant to the 1D FE analysis'''
     def __init__(self):
         self.execution = execution_.Execution()
-        self.cmdShell = cmd_.FeministShell(self)
+        self.cmdShell = cmd_.Pyfem1dShell(self)
 
     def startShell(self):
         self.cmdShell.cmdloop()

@@ -3,11 +3,11 @@
 from __future__ import division, print_function, absolute_import
 
 import Tkinter
-import feminist.tkgui
-import feminist.analysis
+import pyfem1d.tkgui
+import pyfem1d.analysis
 from multiprocessing import Process
 
-an = feminist.analysis.Analysis()
+an = pyfem1d.analysis.Analysis()
 an.execution.parseCmd()
 
 if not an.execution.silent:
@@ -20,7 +20,7 @@ if an.execution.inputFile:
 
 # Start gui if -g was used
 if an.execution.gui:
-    feminist.tkgui.startGui(an)
+    pyfem1d.tkgui.startGui(an)
 
 # Start interactive shell if -i was given or
 # there was neither input file nor -g
