@@ -2,17 +2,15 @@ bctype 2
 
 # Add the example loading function
 
-addloading ex_load.py
+addload ex_load.py
 
-setloading ex_load # It is not enought to add, it also needs to be set
-setloadingpars 25 0.005
+load ex_load 25 0.005 # It is not enought to add, it also needs to be set
 
-# Add the example constitutive function
+# Add the example umat function
 
-addconstitutive ex_const.py
+addumat ex_const.py
 
-setconstitutive ex_const # ditto constitutive
-setconstitutivepars 200 3000
+umat ex_const 200 3000 # ditto umat
 
 solve
 plot

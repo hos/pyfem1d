@@ -47,7 +47,7 @@ To see all you options regarding the invocation of pyfem1d, type in your command
 $ pyfem1d --help
 usage: pyfem1d [-h] [-o OUTPUT_FILE] [-d DISPLACEMENT_FILE] [-u STRESS_FILE]
                 [-p PLOT_FILE] [-n NUMBER_OF_ELEMENTS] [-t TIMESTEP]
-                [-m MAXIMUM_TIME] [--constitutive-dir CONSTITUTIVE_DIR]
+                [-m MAXIMUM_TIME] [--umat-dir UMAT_DIR]
                 [--load-dir LOAD_DIR] [-g] [-v] [-s] [-i]
                 [input_file]
 ...
@@ -64,9 +64,8 @@ You can list the possible commands with the command `help`.
 pyfem1d>> help
 Documented commands (type help <topic>):
 ========================================
-bctype  help   plotps           setconstitutivepars  solve  
-dt      nelem  quit             setloading           tmax
-gui     plot   setconstitutive  setloadingpars       verbose
+addload  bctype  gui   load   plot    pwd   solve  umat
+addumat  dt      help  nelem  plotps  quit  tmax   verbose
 ...
 ```
 
@@ -80,8 +79,7 @@ pyfem1d>> tmax 25
 pyfem1d>> nelem 10
 pyfem1d>> setloading triangle
 pyfem1d>> setloadingpars 10 0.005
-pyfem1d>> setconstitutive maxwell
-pyfem1d>> setconstitutivepars 200 3000
+pyfem1d>> umat maxwell 200 3000
 pyfem1d>> solve
  Input file   : None
  Output file  : /home/onur/default_out.dat
@@ -109,9 +107,9 @@ Plotting to file /home/onur/default.ps
 2. Maximum time for the simulation is set to 25 time units.
 3. Number of elements is set to 10.
 4. The loading function is selected as `triangle`.
-5. Parameters for the triangle function are selected as parameter\_1 = 10 and parameter\_2 = 0.005. Note that you can define any loading function with any parameters for your own purposes. This is also valid for the constitutive functions for materials.
-6. The constitutive function is selected as `maxwell`.
-7. The parameters to the constitutive function are given the same way as the loading function. Again, note that you can define any parameter inside the specific files for materials, see the next section regarding adding new materials.
+5. Parameters for the triangle function are selected as parameter\_1 = 10 and parameter\_2 = 0.005. Note that you can define any loading function with any parameters for your own purposes. This is also valid for the umat functions for materials.
+6. The umat function is selected as `maxwell`.
+7. The parameters to the umat function are given the same way as the loading function. Again, note that you can define any parameter inside the specific files for materials, see the next section regarding adding new materials.
 8. The simulation is started by the `solve` command.
 9. After the simulation ends, the user can type `plot` to see the results with `gnuplot`.
 10. The results can also be plotted to a postscript file with the `plotps` command.
@@ -124,11 +122,9 @@ An input for pyfem1d is composed of input lines you would normally enter in pyfe
 # ex1.txt:
 bctype 2
 
-setloading triangle
-setloadingpars 10 0.005
+setloading triangle 10 0.005
 
-setconstitutive maxwell
-setconstitutivepars 200 3000
+umat maxwell 200 3000
 
 solve
 plot
@@ -141,4 +137,4 @@ $ pyfem1d ex1.txt
 ```
 This will run through the lines and execute each line, and even plot the results into the postscript file `ex1.ps`. You can use this to your advantage in many ways; for example exploring the parameter space by batch assigning different material parameters and observing the response.
 
-## Adding a new constitutive function (AKA adding a new material)
+<!-- ## Adding a new umat (AKA adding a new material) -->

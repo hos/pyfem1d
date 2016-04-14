@@ -173,7 +173,7 @@ class Application(Frame):
         #self.met = progress.Meter(self,relief = 'ridge', bd = 3,width = 250)
         #self.met.grid(row = 10,column = 0)
 
-        self.constFrame = FunctionFrame(self,'constitutive')
+        self.constFrame = FunctionFrame(self,'umat')
         self.constFrame.grid(row = 0,column = 3)
         self.loadFrame = FunctionFrame(self,'load')
         self.loadFrame.grid(row = 0,column = 4)

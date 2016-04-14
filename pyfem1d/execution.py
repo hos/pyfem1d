@@ -25,9 +25,9 @@ class Execution:
         self.gui = False
         self.o_node = None
         self.o_elem = None
-        self.constitutiveDir = None
+        self.umatDir = None
         self.loadDir = None
-        self.constitutive = None
+        self.umat = None
         self.load = None
         self.bctype = None
         self.abspath = os.path.dirname(os.path.abspath(__file__))
@@ -49,8 +49,8 @@ class Execution:
         header += " Time step size           dt = %6.4f\n"%(self.mainpar.dt)
         header += " Duration               tmax = %6.4f\n"%(self.mainpar.tmax)
         header += " Boundary Condition   bctype = %i\n"%(self.mainpar.bctype)
-        header += " Material model : %s\n"%(self.constitutive.function)
-        for i,j in zip(self.constitutive.getMetavars(), self.constitutive.getParameterValues()):
+        header += " Material model : %s\n"%(self.umat.function)
+        for i,j in zip(self.umat.getMetavars(), self.umat.getParameterValues()):
             header += "  > " + str(i) + " : " + str(j) + "\n"
         header += " Loading function: %s\n"%(self.load.function)
         for i,j in zip(self.load.getMetavars(), self.load.getParameterValues()):
@@ -87,7 +87,7 @@ class Execution:
         parser.add_argument('-n', '--number-of-elements', default='10', type=int)
         parser.add_argument('-t', '--timestep', default='0.1', type=float)
         parser.add_argument('-m', '--maximum-time', default='25', type=float)
-        parser.add_argument('--constitutive-dir', default=os.path.join(self.abspath,'constitutive'), type=is_dir, action=FullPaths)
+        parser.add_argument('--umat-dir', default=os.path.join(self.abspath,'umat'), type=is_dir, action=FullPaths)
         parser.add_argument('--load-dir', default=os.path.join(self.abspath,'load'), type=is_dir, action=FullPaths)
         parser.add_argument('-g', '--gui', action='store_true', help='Start the graphical user interface')
         parser.add_argument('-v', '--verbose', action='store_true')
@@ -115,10 +115,10 @@ class Execution:
         self.plotFile = os.path.abspath(args.plot_file.name)
 
         #import pdb; pdb.set_trace()
-        self.constitutiveDir = args.constitutive_dir
+        self.umatDir = args.umat_dir
         self.loadDir = args.load_dir
 
-        self.constitutive = UserDefined(self.constitutiveDir,self.abspath)
+        self.umat = UserDefined(self.umatDir,self.abspath)
         self.load = UserDefined(self.loadDir,self.abspath)
 
         #self.bctypelist = [0,1,2]
@@ -151,16 +151,16 @@ class Execution:
 
     def update(self):
         try:
-            self.const_main = self.constitutive.main()
+            self.const_main = self.umat.main()
         except:
             print("Error: No main function defined in the material.")
             raise
         try:
-            self.const_initcond = self.constitutive.initcont()
+            self.const_initcond = self.umat.initcont()
         except:
             self.const_initcond = False
         try:
-            self.const_update = self.constitutive.update()
+            self.const_update = self.umat.update()
         except:
             self.const_update = False
 

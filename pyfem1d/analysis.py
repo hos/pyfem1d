@@ -58,8 +58,8 @@ class Analysis:
         # Simulation loop
         loadfunc= self.execution.load.main()
 
-        if self.execution.constitutive.initcond():
-            self.execution.constitutive.initcond()(self.execution.mainpar.nelem)
+        if self.execution.umat.initcond():
+            self.execution.umat.initcond()(self.execution.mainpar.nelem)
 
         while self.t<=self.execution.mainpar.tmax+self.execution.mainpar.dt:
 
@@ -128,12 +128,12 @@ class Analysis:
             outs.write(' %6.4e   %6.4e   %6.4e\n'%(self.t, self.eps[self.o_elem-1], self.sig[self.o_elem-1]))
 
             # Update History
-            if self.execution.constitutive.update():
-                self.execution.constitutive.update()()
+            if self.execution.umat.update():
+                self.execution.umat.update()()
 
             self.t += self.execution.mainpar.dt
             #fepgui.app.met.set(self.t/self.tmax)
-        print('=== END OF PROCESSING ===')
+        print('Finished solution')
         outd.close();  outs.close(); output.close()
 
     def init_system(self):
@@ -165,7 +165,7 @@ class Analysis:
             epsl = (u[n+1]-u[n])/self.dl
             # Calculate the stress, modulus and update history at the Gauss point
 
-            sigl,aal = self.execution.constitutive.main()(self.execution.mainpar.dt,n,epsl)
+            sigl,aal = self.execution.umat.main()(self.execution.mainpar.dt,n,epsl)
 
             #store the stresses and moduli
             self.eps[n] = epsl

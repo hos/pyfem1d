@@ -100,16 +100,16 @@ class Pyfem1dShell(cmd.Cmd):
     #def do_cd(self, arg):
         #'Changes current working directory'
 
-    def do_addconstitutive(self, arg):
-        '''Add constitutive material: addconstitutive exampleMaterial.py'''
+    def do_addumat(self, arg):
+        '''Add umat material: addumat exampleMaterial.py'''
         val, errormsg = parse_line(arg, type = str, n_args = 1)
         if not errormsg:
             absModulePath = os.path.join(self.analysis.execution.workingDirectory, val[0])
-            self.analysis.execution.constitutive.addModule(absModulePath)
+            self.analysis.execution.umat.addModule(absModulePath)
         else:
             raise Exception(errormsg)
 
-    def do_addloading(self, arg):
+    def do_addload(self, arg):
         '''Add loading function: addloading exampleLoading.py'''
         val, errormsg = parse_line(arg, type = str, n_args = 1)
         if not errormsg:
@@ -118,31 +118,30 @@ class Pyfem1dShell(cmd.Cmd):
         else:
             raise Exception(errormsg)
 
-    def do_setloading(self, arg):
-        '''Set loading function: setLoading triangle'''
-        val, errormsg = parse_line(arg, type = str, n_args = 1)
+
+    def do_load(self, arg):
+        '''Set load function: load triangle '''
+        val, errormsg = parse_line(arg, type = str, n_args = "1+")
         if not errormsg:
             self.analysis.execution.load.setFunction(val[0])
+            if len(val) > 1:
+                parameters = map(float, val[1:])
+                self.analysis.execution.load.setParameterValues(parameters)
         else:
             raise Exception(errormsg)
 
-    def do_setconstitutive(self, arg):
-        '''Set constitutive function: setLoading maxwell '''
-        val, errormsg = parse_line(arg, type = str, n_args = 1)
+
+    def do_umat(self, arg):
+        '''Set umat function: umat maxwell '''
+        val, errormsg = parse_line(arg, type = str, n_args = "1+")
         if not errormsg:
-            self.analysis.execution.constitutive.setFunction(val[0])
+            self.analysis.execution.umat.setFunction(val[0])
+            if len(val) > 1:
+                parameters = map(float, val[1:])
+                self.analysis.execution.umat.setParameterValues(parameters)
         else:
             raise Exception(errormsg)
 
-    def do_setconstitutivepars(self, arg):
-        '''Set constitutive function parameters: setConstitutiveParameterValues 100 200 300'''
-        val, errormsg = parse_line(arg, type = float)
-        self.analysis.execution.constitutive.setParameterValues(val)
-
-    def do_setloadingpars(self, arg):
-        '''Set loading function parameters: setLoadingParameterValues 100 200 300'''
-        val, errormsg = parse_line(arg, type = float)
-        self.analysis.execution.load.setParameterValues(val)
 
     def do_quit(self, arg):
         'End session'
@@ -196,8 +195,18 @@ def cleanLine(line):
 def parse_line(arg, n_args = None, type=int):
     'Convert a series of zero or more numbers to an argument tuple'
     result = tuple(map(type, arg.split()))
-    if n_args and len(result) != n_args:
-        errormsg = "expected "+str(n_args)+" arguments, received "+str(len(result))
+    if isinstance(n_args, str):
+        if n_args[-1] == "+":
+            min_limit = int(n_args[:-1])
+            if len(result) < min_limit:
+                errormsg = "expected minimum "+str(min_limit)+" arguments, received "+str(len(result))
+            else:
+                errormsg = None
+    elif isinstance(n_args, int):
+        if n_args and len(result) != n_args:
+            errormsg = "expected "+str(n_args)+" arguments, received "+str(len(result))
+        else:
+            errormsg = None
     else:
         errormsg = None
     return result, errormsg

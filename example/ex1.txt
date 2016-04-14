@@ -2,11 +2,9 @@ help
 
 bctype 2
 
-setloading triangle
-setloadingpars 10 0.005
+load triangle 10 0.005
 
-setconstitutive maxwell
-setconstitutivepars 200 3000
+umat maxwell 200 3000
 
 solve
 plot
