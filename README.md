@@ -57,14 +57,8 @@ optional arguments:
   -h, --help     show this help message and exit
   -v, --verbose
 ```
-### Some hints
 
-* You can directly start the GUI with the `-g` flag.
-* If you have given an input file and still want to use the CLI after the file
-  is executed, you can give the `-i` option. You can also have the CLI and GUI
-  at the same time with `-i -g` at the same time.
-
-## Example pyfem1d session: Using CLI commands
+## Example pyfem1d session
 
 You can list the possible commands with the command `help`.
 ```
