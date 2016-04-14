@@ -16,7 +16,6 @@ class Pyfem1dShell(cmd.Cmd):
     def do_verbose(self, arg):
         '''Enable verbose output'''
         self.analysis.execution.verbose = True
-        #import pdb; pdb.set_trace()
         #print(arg)
 
     # def do_gui(self, arg):
@@ -27,7 +26,7 @@ class Pyfem1dShell(cmd.Cmd):
         '''Set timestep size: dt value'''
         val, errormsg = parse_line(arg, type = float, n_args = 1)
         if not errormsg:
-            self.analysis.execution.dt = val[0]
+            self.analysis.execution.timestep = val[0]
         else:
             raise Exception(errormsg)
 
@@ -35,7 +34,7 @@ class Pyfem1dShell(cmd.Cmd):
         '''Set total number of elements with nelem(value)'''
         val, errormsg = parse_line(arg, type = int, n_args = 1)
         if not errormsg:
-            self.analysis.execution.nelem = val[0]
+            self.analysis.execution.number_of_elements = val[0]
         else:
             raise Exception(errormsg)
 
@@ -43,7 +42,7 @@ class Pyfem1dShell(cmd.Cmd):
         '''Set maximum time tmax(value)'''
         val, errormsg = parse_line(arg, type = float, n_args = 1)
         if not errormsg:
-            self.analysis.execution.tmax = val[0]
+            self.analysis.execution.maximum_time = val[0]
         else:
             raise Exception(errormsg)
 
@@ -75,7 +74,7 @@ class Pyfem1dShell(cmd.Cmd):
 
         self.analysis.execution.plotToWindow(stressFile=stressFile)
 
-    def do_plotps(self, arg):
+    def do_plotpdf(self, arg):
         '''Plot the output stress file to a pdf file using gnuplot. optional arguments: plotFile stressFile'''
         val, errormsg = parse_line(arg, type = str)
         if len(val) == 0:
@@ -130,9 +129,11 @@ class Pyfem1dShell(cmd.Cmd):
             raise Exception(errormsg)
 
     def do_listumats(self, arg):
+        '''List all umats with the parameters and their values'''
         self.list_umat_closure(self.analysis.execution.umat_dict)
 
     def do_listloads(self, arg):
+        '''List all loading functions with the parameters and their values'''
         self.list_umat_closure(self.analysis.execution.load_dict)
 
 
@@ -158,12 +159,13 @@ class Pyfem1dShell(cmd.Cmd):
             raise Exception(errormsg)
 
 
-    def do_quit(self, arg):
-        'End session'
+    def do_q(self, arg):
+        '''End session'''
         self.close()
         return True
 
     def do_EOF(self,arg):
+        '''End session'''
         self.close()
         return True
 

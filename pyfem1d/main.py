@@ -5,8 +5,7 @@ def __main__():
     an = pyfem1d.analysis.Analysis()
     an.execution.parseCmd()
 
-    if not an.execution.silent:
-        an.execution.printHeader()
+    an.execution.printHeader()
 
     # Execute the input file if given
     if an.execution.inputFile:

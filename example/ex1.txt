@@ -1,11 +1,15 @@
-help
 
 bctype 2
+tmax 25
+nelem 10
+dt 0.1
 
 load Triangle 10 0.005
 
 umat Maxwell 200 300
 
 solve
+
 plot
-plotps omg.ps
+
+plotpdf output.pdf

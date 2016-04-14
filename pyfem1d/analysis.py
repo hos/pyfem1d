@@ -16,15 +16,15 @@ class Analysis:
         self.cmdShell.cmdloop()
 
     def setRuntimeParameters(self):
-        self.o_node = self.execution.mainpar.nelem + 1  #node to be written to the output
-        self.o_elem = self.execution.mainpar.nelem  #element to be written to the output
-        self.nelem = self.execution.mainpar.nelem
-        self.neq = self.execution.mainpar.nelem + 1
-        self.nnode = self.execution.mainpar.nelem + 1
+        self.o_node = self.execution.number_of_elements + 1  #node to be written to the output
+        self.o_elem = self.execution.number_of_elements  #element to be written to the output
+        self.number_of_elements = self.execution.number_of_elements
+        self.neq = self.execution.number_of_elements + 1
+        self.nnode = self.execution.number_of_elements + 1
         self.t = 0
 
-        if isinstance(self.execution.mainpar.bctype, collections.Iterable):
-            self.execution.mainpar.bctype = 0
+        if isinstance(self.execution.bctype, collections.Iterable):
+            self.execution.bctype = 0
 
     def solve(self):
         '''Solution function'''
@@ -35,6 +35,15 @@ class Analysis:
         if not self.execution.load:
             raise Exception("No load function specified")
 
+        if not self.execution.maximum_time:
+            raise Exception("No end time specified")
+
+        if not self.execution.number_of_elements:
+            raise Exception("No number of elements specified")
+
+        if not self.execution.timestep:
+            raise Exception("No timestep specified")
+
         self.setRuntimeParameters()
         output = open(self.execution.outputFile, 'w')
 
@@ -44,13 +53,13 @@ class Analysis:
         output.write(self.execution.getHeader())
         #self.printheader(ofile=output)
 
-        neq = self.execution.mainpar.nelem + 1
+        neq = self.execution.number_of_elements + 1
         #Initialize the system matrices
         self.init_system()
         #Set time to zero
         self.t = 0.
         #Generate nodes &  initialize solution vector
-        dl = 1 / self.execution.mainpar.nelem
+        dl = 1 / self.execution.number_of_elements
         u = execution_.zeros((self.neq, 1))
         x = execution_.zeros((self.nnode, 1))
         #u= zeroflt(self.neq,1)
@@ -64,11 +73,11 @@ class Analysis:
 
         # Simulation loop
 
-        self.execution.umat.initial_cond(self.execution.mainpar.nelem)
+        self.execution.umat.initial_cond(self.execution.number_of_elements)
         # if self.execution.umat.initcond():
-        #     self.execution.umat.initcond()(self.execution.mainpar.nelem)
+        #     self.execution.umat.initcond()(self.execution.number_of_elements)
 
-        while self.t <= self.execution.mainpar.tmax + self.execution.mainpar.dt:
+        while self.t <= self.execution.maximum_time + self.execution.timestep:
 
             load = self.execution.load.value(self.t)
             if self.execution.verbose:
@@ -84,13 +93,13 @@ class Analysis:
                 #and update the history variables
                 self.comp_stiffness(u)
                 #impose boundary conditions
-                if self.execution.mainpar.bctype == 0:
+                if self.execution.bctype == 0:
                     self.kg[:][0] = 0.
                     self.kg[0][:] = 0.
                     self.kg[0][0] = 1.
                     self.fg[-1] -= load
                     self.fg[0] = 0.
-                elif self.execution.mainpar.bctype == 2:
+                elif self.execution.bctype == 2:
                     du = load - u[-1]
                     for i in range(int(neq)):
                         self.fg[i] -= self.kg[i][-1] * du
@@ -102,7 +111,7 @@ class Analysis:
                     self.kg[-1][neq - 1] = 1.
                     self.fg[0] = 0.
                     self.fg[-1] = -1 * du
-                elif self.execution.mainpar.bctype == 1:
+                elif self.execution.bctype == 1:
                     self.kg[:][0] = 0.
                     self.kg[0][:] = 0.
                     self.kg[0][0] = 1.
@@ -111,7 +120,7 @@ class Analysis:
                     self.fg[0] = 0
                 else:
                     raise Exception('Error: Undefined bc type identifier: ' +
-                                    self.execution.mainpar.bctype)
+                                    self.execution.bctype)
                 #calculate the residual
                 res = np.linalg.norm(self.fg, 2)
                 if self.execution.verbose:
@@ -132,7 +141,7 @@ class Analysis:
                 output.write(' %4i    %6.4e   %6.4e\n' % (i, x[i], u[i]))
             output.write('\n  Element solutions\n')
             output.write('  Element   Strain       Stress\n')
-            for i in range(int(self.nelem)):
+            for i in range(int(self.number_of_elements)):
                 output.write(' %4i       %6.4e   %6.4e\n' %
                              (i, self.eps[i], self.sig[i]))
             outd.write(' %6.4e   %6.4e\n' % (self.t, u[self.o_node - 1]))
@@ -143,7 +152,7 @@ class Analysis:
             if self.execution.umat.update():
                 self.execution.umat.update()()
 
-            self.t += self.execution.mainpar.dt
+            self.t += self.execution.timestep
 
         print('Finished solution')
         outd.close()
@@ -153,15 +162,15 @@ class Analysis:
     def init_system(self):
         self.fg = execution_.zeros((self.neq, 1))
         self.kg = execution_.zeros((self.neq, self.neq))
-        self.eps = execution_.zeros((self.nelem, 1))
-        self.sig = execution_.zeros((self.nelem, 1))
-        self.aa = execution_.zeros((self.nelem, 1))
+        self.eps = execution_.zeros((self.number_of_elements, 1))
+        self.sig = execution_.zeros((self.number_of_elements, 1))
+        self.aa = execution_.zeros((self.number_of_elements, 1))
         #self.fg=zeroflt(self.neq,1)
         #self.kg=zeroflt(self.neq,self.neq)
-        #self.eps=zeroflt(self.nelem,1)
-        #self.sig=zeroflt(self.nelem,1)
-        #self.aa=zeroflt(self.nelem,1)
-        self.dl = 1 / float(self.nelem)
+        #self.eps=zeroflt(self.number_of_elements,1)
+        #self.sig=zeroflt(self.number_of_elements,1)
+        #self.aa=zeroflt(self.number_of_elements,1)
+        self.dl = 1 / float(self.number_of_elements)
 
     def comp_stiffness(self, u):
         '''Compute stiffness matrix and residual vector,
@@ -172,14 +181,14 @@ class Analysis:
         dN = execution_.zeros((2, 1))
         #dN=zeroflt(2,1)
         # Assembly: loop over elements
-        for n in range(int(self.nelem)):
+        for n in range(int(self.number_of_elements)):
             dN[0] = -1 / self.dl
             dN[1] = -1 * dN[0]
             #compute element strain
             epsl = (u[n + 1] - u[n]) / self.dl
             # Calculate the stress, modulus and update history at the Gauss point
 
-            sigl, aal = self.execution.umat.stress_tangent(self.execution.mainpar.dt,
+            sigl, aal = self.execution.umat.stress_tangent(self.execution.timestep,
                                                    n, epsl)
 
             #store the stresses and moduli
@@ -197,10 +206,10 @@ class Analysis:
                 for j in range(2):
                     ke[i][j] += dN[i] * aal * dN[
                         j] * self.dl  #\int B^{T} E B dV
+
             #assemble global matrices
             for i in range(2):
                 self.fg[i + offs] += fe[i]
                 for j in range(2):
                     self.kg[i + offs][j + offs] += ke[i][j]
             offs += 1
-            #pdb.set_trace()

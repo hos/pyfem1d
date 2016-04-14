@@ -1,4 +1,8 @@
+
 bctype 2
+tmax 25
+nelem 10
+dt 0.1
 
 # Add the example loading function and set load to the class name
 
@@ -14,4 +18,5 @@ umat ExampleUmat 200 3000
 
 solve
 plot
-plotps omg.ps
+
+plotpdf output.pdf

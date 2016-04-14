@@ -22,15 +22,11 @@ class Execution:
         self.stressFile = None
         self.displacementFile = None
         self.plotFile = None
-        self.silent = False
-        self.verbose = False
         self.interactive = False
         # self.gui = False
         self.o_node = None
         self.o_elem = None
-        # self.umatDir = None
-        # self.loadDir = None
-        # self.umat = None
+
         self.umat_dict = {}
         self.load_dict = {}
 
@@ -44,6 +40,11 @@ class Execution:
         self.abspath = os.path.dirname(os.path.abspath(__file__))
         self.workingDirectory = None
 
+        self.number_of_elements = None
+        self.timestep = None
+        self.maximum_time = None
+
+
     def getHeader(self):
         header = ""
         if self.inputFile:
@@ -56,74 +57,71 @@ class Execution:
         header += " Disp. file   : " + self.displacementFile + "\n"
         #header += " Log file     : " + self.logFile + "\n"
         header += " The following parameters have been set:\n"
-        header += " Number of Elements    nelem = %i\n" % (self.mainpar.nelem)
-        header += " Time step size           dt = %6.4f\n" % (self.mainpar.dt)
-        header += " Duration               tmax = %6.4f\n" % (
-            self.mainpar.tmax)
-        header += " Boundary Condition   bctype = %i\n" % (self.mainpar.bctype)
-        header += " Material model : %s\n" % (type(self.umat).__name__)
-        # import pdb; pdb.set_trace()
-        for i, j in zip(self.umat.parameter_names, self.umat.parameter_values):
-            header += "  > " + str(i) + " : " + str(j) + "\n"
-        header += " Loading function: %s\n" % (type(self.load).__name__)
-        for i, j in zip(self.load.parameter_names, self.load.parameter_values):
-            header += "  > " + str(i) + " : " + str(j) + "\n"
+        header += " Number of Elements    nelem = %i\n" % (self.number_of_elements)
+        header += " Time step size           dt = %6.4f\n" % (self.timestep)
+        header += " Duration               tmax = %6.4f\n" % (self.maximum_time)
+        header += " Boundary Condition   bctype = %i\n" % (self.bctype)
+
+        if self.umat:
+            header += " Material model : %s\n" % (type(self.umat).__name__)
+            for i, j in zip(self.umat.parameter_names, self.umat.parameter_values):
+                header += "  > " + str(i) + " : " + str(j) + "\n"
+        if self.load:
+            header += " Loading function: %s\n" % (type(self.load).__name__)
+            for i, j in zip(self.load.parameter_names, self.load.parameter_values):
+                header += "  > " + str(i) + " : " + str(j) + "\n"
+
         return header
 
     def printHeader(self):
-        '''Prints program header with version'''
+        """Prints program header with version"""
         print("pyfem1d - 1d finite elements for testing material formulations")
         #print(self.getHeader())
 
-    def test(self):
-        self.inputFile = 'ASDADASD'
-
     def parseCmd(self):
-        '''Parses command line'''
+        """Parses command line"""
         self.abspath = os.path.dirname(os.path.abspath(__file__))
 
         parser = argparse.ArgumentParser()
-        parser.add_argument('input',
-                            metavar='input_file',
-                            nargs='?',
-                            help='input file',
-                            type=argparse.FileType('r'))
-        parser.add_argument('-o',
-                            '--output-file',
-                            default='default_out.dat',
-                            type=argparse.FileType('w'))
-        #parser.add_argument('-l', '--log-file', default='default.log',
-        #type=argparse.FileType('w'))
-        parser.add_argument('-d',
-                            '--displacement-file',
-                            default='default_disp.dat',
-                            type=argparse.FileType('w'))
-        parser.add_argument('-u',
-                            '--stress-file',
-                            default='default_stre.dat',
-                            type=argparse.FileType('w'))
-        parser.add_argument('-p',
-                            '--plot-file',
-                            default='default.ps',
-                            type=argparse.FileType('w'))
-        parser.add_argument('-n',
-                            '--number-of-elements',
-                            default='10',
-                            type=int)
-        parser.add_argument('-t', '--timestep', default='0.1', type=float)
-        parser.add_argument('-m', '--maximum-time', default='25', type=float)
-        # parser.add_argument('--umat-dir', default=os.path.join(self.abspath,'umat_temp'), type=is_dir, action=FullPaths)
-        # parser.add_argument('--load-dir', default=os.path.join(self.abspath,'load_temp'), type=is_dir, action=FullPaths)
-        # parser.add_argument('-g', '--gui', action='store_true', help='Start the graphical user interface')
-        parser.add_argument('-v', '--verbose', action='store_true')
-        parser.add_argument('-s', '--silent', action='store_true')
-        parser.add_argument('-i', '--interactive', action='store_true')
+        parser.add_argument("input",
+                            metavar="input_file",
+                            nargs="?",
+                            help="input file",
+                            type=argparse.FileType("r"))
+        # parser.add_argument("-o",
+        #                     "--output-file",
+        #                     default="default_out.dat",
+        #                     type=argparse.FileType("w"))
+        #parser.add_argument("-l", "--log-file", default="default.log",
+        #type=argparse.FileType("w"))
+        # parser.add_argument("-d",
+        #                     "--displacement-file",
+        #                     default="default_disp.dat",
+        #                     type=argparse.FileType("w"))
+        # parser.add_argument("-u",
+        #                     "--stress-file",
+        #                     default="default_stre.dat",
+        #                     type=argparse.FileType("w"))
+        # parser.add_argument("-p",
+        #                     "--plot-file",
+        #                     default="default.ps",
+        #                     type=argparse.FileType("w"))
+        # parser.add_argument("-n",
+        #                     "--number-of-elements",
+        #                     default="10",
+        #                     type=int)
+
+        # parser.add_argument("-t", "--timestep", default="0.1", type=float)
+        # parser.add_argument("-m", "--maximum-time", default="25", type=float)
+        # parser.add_argument("-g", "--gui", action="store_true", help="Start the graphical user interface")
+        parser.add_argument("-v", "--verbose", action="store_true")
+        # parser.add_argument("-s", "--silent", action="store_true")
+        # parser.add_argument("-i", "--interactive", action="store_true")
         args = parser.parse_args()
 
-        #import pdb; pdb.set_trace()
-        self.silent = args.silent
+        # self.silent = args.silent
         self.verbose = args.verbose
-        self.interactive = args.interactive
+        # self.interactive = args.interactive
         # self.gui = args.gui
 
         # input file
@@ -134,38 +132,19 @@ class Execution:
         else:
             self.workingDirectory = os.getcwd()
 
-        self.outputFile = os.path.abspath(args.output_file.name)
         #self.logFile = os.path.abspath(args.log_file.name)
-        self.stressFile = os.path.abspath(args.stress_file.name)
-        self.displacementFile = os.path.abspath(args.displacement_file.name)
-        self.plotFile = os.path.abspath(args.plot_file.name)
+        # self.outputFile = os.path.abspath(args.output_file.name)
+        # self.stressFile = os.path.abspath(args.stress_file.name)
+        # self.displacementFile = os.path.abspath(args.displacement_file.name)
+        # self.plotFile = os.path.abspath(args.plot_file.name)
+
+        self.outputFile = "default_out.dat"
+        self.stressFile = "default_stre.dat"
+        self.displacementFile = "default_disp.dat"
 
         self.add_umats(os.path.abspath(pyfem1d.umat_defaults.__file__))
         self.add_loads(os.path.abspath(pyfem1d.load_defaults.__file__))
-        # import pdb; pdb.set_trace()
 
-        # self.umatDir = args.umat_dir
-        # self.loadDir = args.load_dir
-
-        # self.umat = UserDefined(self.umatDir,self.abspath)
-        # self.load = UserDefined(self.loadDir,self.abspath)
-
-        #self.bctypelist = [0,1,2]
-        self.p0 = ['nelem', 'dt', 'tmax', 'bctype']
-        self.p1 = [args.number_of_elements, args.timestep, args.maximum_time,
-                   [0, 1, 2]]
-        #self.p1 = [self.nelem,self.dt,self.tmax,self.bctypelist]
-        self.p2 = ['# of the elements', 'Timestep', 'Max time', 'BC TYPE']
-
-        self.mainpar = ParameterList()
-        for i, j, k in zip(self.p0, self.p1, self.p2):
-            self.mainpar.addvar(i, j, metavar=k)
-
-        self.mainpar.setOptions('bctype', [
-            "0 - Clamped bar subjected to a single force at the free end - Stress controlled",
-            "1 - Clamped bar with uniform body load - Stress controlled",
-            "2 - Clamped bar subjected to displacement-driven loading at the free end - Strain controlled"
-        ])
 
     def add_umats(self, path):
         self.umat_dict.update(deploy_umats(path))
@@ -192,7 +171,7 @@ class Execution:
     # IPython Stuff
 
     #def ipShellWithNamespace(self,ns):
-    #'''Starts the interactive IPython shell'''
+    #"Starts the interactive IPython shell"
     #from IPython import embed
     #from IPython.config.loader import Config
     #cfg = Config()
@@ -200,25 +179,10 @@ class Execution:
     #embed(config = cfg, user_ns = ns, display_banner = False)
 
     #def ipShell(self):
-    #'''Starts the interactive IPython shell
-    #namespace defaults to __main__.__dict__'''
+    #"Starts the interactive IPython shell
+    #namespace defaults to __main__.__dict__"
     #from __main__ import __dict__ as ns
     #self.ipShellWithNamespace(ns)
-
-    def update(self):
-        try:
-            self.const_main = self.umat.main()
-        except:
-            print("Error: No main function defined in the material.")
-            raise
-        try:
-            self.const_initcond = self.umat.initcont()
-        except:
-            self.const_initcond = False
-        try:
-            self.const_update = self.umat.update()
-        except:
-            self.const_update = False
 
     def plotToWindow(self, stressFile=None):
         if not stressFile:
@@ -229,45 +193,46 @@ class Execution:
         commands += "set multiplot;"
         commands += "set lmargin at screen 0.025;"
         commands += "set rmargin at screen 0.325;"
-        commands += "set xlabel 'Time';"
-        commands += "set ylabel 'Strain';"
-        commands += "plot \'%s\' u 1:2 w l;" % stressFile
+        commands += "set xlabel \"Time\";"
+        commands += "set ylabel \"Strain\";"
+        commands += "plot \"%s\" u 1:2 w l;" % stressFile
         commands += "set lmargin at screen 0.35;"
         commands += "set rmargin at screen 0.65;"
-        commands += "set ylabel 'Stress';"
-        commands += "plot \'%s\' u 1:3 w l;" % stressFile
+        commands += "set ylabel \"Stress\";"
+        commands += "plot \"%s\" u 1:3 w l;" % stressFile
         commands += "set lmargin at screen 0.675;"
         commands += "set rmargin at screen 0.975;"
-        commands += "set xlabel 'Strain';"
-        commands += "plot \'%s\' u 2:3 w l;" % stressFile
+        commands += "set xlabel \"Strain\";"
+        commands += "plot \"%s\" u 2:3 w l;" % stressFile
         commands += "unset multiplot;"
 
         call(["gnuplot", "-p", "-e", commands])
 
-#set output '| ps2pdf -dCompatibilityLevel=1.4 -dPDFSETTINGS=/prepress - '''+self.ofilebase+'''_plot.pdf;\
+#set output "| ps2pdf -dCompatibilityLevel=1.4 -dPDFSETTINGS=/prepress - "+self.ofilebase+"_plot.pdf;\
 
-    def plotPdf(self, stressFile=None, plotFile=None):
-        if not stressFile:
-            stressFile = self.stressFile
+    def plotPdf(self, stressFile, plotFile):
+        # if not stressFile:
+        #     stressFile = self.stressFile
 
-        if not plotFile:
-            plotFile = self.plotFile
+        # if not plotFile:
+        #     plotFile = self.plotFile
 
-        if not self.silent:
-            print('Plotting to file %s' % plotFile)
+        print("Plotting to file %s" % plotFile)
 
         commands = ""
-        commands += "set term postscript landscape enhanced color;"
-        commands += "set output \'%s\';" % plotFile
+        commands += "set term pdf enhanced font \"Helvetica,10\";"
+        commands += "set output \"%s\";" % plotFile
         commands += "set lmargin;"
         commands += "set rmargin;"
-        commands += "set xlabel \'Time\';"
-        commands += "set ylabel \'Strain\';"
-        commands += "plot \'%s\' u 1:2 w l lw 3 lt 1;" % stressFile
-        commands += "set ylabel \'Stress\';"
-        commands += "plot \'%s\' u 1:3 w l lw 3 lt 1;" % stressFile
-        commands += "set xlabel \'Strain\';"
-        commands += "plot \'%s\' u 2:3 w l lw 3 lt 1;" % stressFile
+        commands += "set grid;"
+        commands += "unset key;"
+        commands += "set xlabel \"Time\";"
+        commands += "set ylabel \"Strain\";"
+        commands += "plot \"%s\" u 1:2 w l lt 1;" % stressFile
+        commands += "set ylabel \"Stress\";"
+        commands += "plot \"%s\" u 1:3 w l lt 1;" % stressFile
+        commands += "set xlabel \"Strain\";"
+        commands += "plot \"%s\" u 2:3 w l lt 1;" % stressFile
 
         call(["gnuplot", "-p", "-e", commands])
 
@@ -288,102 +253,3 @@ def is_dir(dirname):
     else:
         return dirname
 
-
-def getModuleName(moduleFilePath):
-    '''Gets the module name from arbitrary paths, like
-    /a/b/module.py, module.py, module, a/module.py'''
-    moduleBasename = ntpath.basename(moduleFilePath)
-    if moduleBasename[-3:] == '.py':
-        moduleBasename = moduleBasename[:-3]
-
-    return moduleBasename
-
-
-class parameter:
-    def __init__(self, variable, metavar=None, options=None):
-        self.variable = variable
-        self.metavar = metavar
-        self.options = options
-
-    def setOptions(self, options):
-        self.options = options
-
-    def setMetavar(self, metavar):
-        self.metavar = metavar
-
-
-class ParameterList:
-    def __init__(self):
-        self.parameters = []
-
-    def updatesize(self):
-        self.size = len(self.parameters)
-
-    def addvar(self, variable, value, options=[], metavar=[]):
-        self.__dict__[variable] = value
-        self.parameters.append(parameter(variable,
-                                         metavar=metavar,
-                                         options=options))
-        self.updatesize()
-
-    def parseArguments(self, *args):
-        if len(args) > 2:
-            print("Error: Invalid number of arguments")
-            raise Exception
-        parameters = []
-        values = []
-        dummy = []
-
-        for i in args:
-            dummy.append(i)
-
-        if len(dummy) >= 1:
-            parameters = dummy[0]
-            if len(dummy) == 2:
-                values = dummy[1]
-        return parameters, values
-
-    def getMetavars(self):
-        a = []
-        for i in self.parameters:
-            a.append(i.metavar)
-        return a
-
-    #def getParameterList(self):
-    #pass
-
-    #def getParameter(self):
-    #pass
-
-    #def getOptions(self):
-    #pass
-
-    def getParameterValues(self):
-        a = []
-        for i in self.parameters:
-            a.append(self.__dict__[i.variable])
-        return a
-
-    def setParameterValues(self, *args):
-        parameters, values = self.parseArguments(*args)
-        if len(parameters) != self.size:
-            print("Error: 'parlist' lengths do not match", parameters)
-            return
-        for i, j in zip(self.parameters, parameters):
-            self.__dict__[i.variable] = j
-
-    #def setParameters(self):
-    #parameters, values = parseArguments(*args)
-    #for i in self.par:
-    #if i.name == name:
-    #i.pars = val
-    #return
-    #print("Error: could not find pars: %s" %(par))
-
-    def setOptions(self, *args):
-        parameters, values = self.parseArguments(*args)
-        for i in self.parameters:
-            if i.variable == parameters:
-                i.setOptions(values)
-                return
-        raise Exception("Error: could not find opt: %s" % (parameters))
