@@ -1,8 +1,7 @@
-from __future__ import division, print_function, absolute_import
 import cmd
 import sys
 import os
-import pyfem1d.tkgui
+# import pyfem1d.tkgui
 
 class Pyfem1dShell(cmd.Cmd):
     intro = 'Type help or ? to list commands.\n'
@@ -20,9 +19,9 @@ class Pyfem1dShell(cmd.Cmd):
         #import pdb; pdb.set_trace()
         #print(arg)
 
-    def do_gui(self, arg):
-        '''Start graphical user interface'''
-        pyfem1d.tkgui.startGui(self.analysis)
+    # def do_gui(self, arg):
+    #     '''Start graphical user interface'''
+    #     pyfem1d.tkgui.startGui(self.analysis)
 
     def do_dt(self, arg):
         '''Set timestep size: dt value'''
@@ -100,21 +99,21 @@ class Pyfem1dShell(cmd.Cmd):
     #def do_cd(self, arg):
         #'Changes current working directory'
 
-    def do_addumat(self, arg):
+    def do_addumats(self, arg):
         '''Add umat material: addumat exampleMaterial.py'''
         val, errormsg = parse_line(arg, type = str, n_args = 1)
         if not errormsg:
             absModulePath = os.path.join(self.analysis.execution.workingDirectory, val[0])
-            self.analysis.execution.umat.addModule(absModulePath)
+            self.analysis.execution.add_umats(absModulePath)
         else:
             raise Exception(errormsg)
 
-    def do_addload(self, arg):
+    def do_addloads(self, arg):
         '''Add loading function: addloading exampleLoading.py'''
         val, errormsg = parse_line(arg, type = str, n_args = 1)
         if not errormsg:
             absModulePath = os.path.join(self.analysis.execution.workingDirectory, val[0])
-            self.analysis.execution.load.addModule(absModulePath)
+            self.analysis.execution.add_loads(absModulePath)
         else:
             raise Exception(errormsg)
 
@@ -123,22 +122,38 @@ class Pyfem1dShell(cmd.Cmd):
         '''Set load function: load triangle '''
         val, errormsg = parse_line(arg, type = str, n_args = "1+")
         if not errormsg:
-            self.analysis.execution.load.setFunction(val[0])
+            self.analysis.execution.set_load(val[0])
             if len(val) > 1:
-                parameters = map(float, val[1:])
-                self.analysis.execution.load.setParameterValues(parameters)
+                parameters = tuple(map(float, val[1:]))
+                self.analysis.execution.set_load_parameters(parameters)
         else:
             raise Exception(errormsg)
 
+    def do_listumats(self, arg):
+        self.list_umat_closure(self.analysis.execution.umat_dict)
+
+    def do_listloads(self, arg):
+        self.list_umat_closure(self.analysis.execution.load_dict)
+
+
+    def list_umat_closure(self, dict_):
+        for key, umat in dict_.items():
+            print("  "+key+"(", end="")
+            for n, (name, val) in enumerate(zip(umat.parameter_names, umat.parameter_values)):
+                print(name+"="+str(val), end="")
+                if n != len(umat.parameter_names)-1:
+                    print(", ", end="")
+            print(")")
 
     def do_umat(self, arg):
         '''Set umat function: umat maxwell '''
         val, errormsg = parse_line(arg, type = str, n_args = "1+")
+
         if not errormsg:
-            self.analysis.execution.umat.setFunction(val[0])
+            self.analysis.execution.set_umat(val[0])
             if len(val) > 1:
-                parameters = map(float, val[1:])
-                self.analysis.execution.umat.setParameterValues(parameters)
+                parameters = tuple(map(float, val[1:]))
+                self.analysis.execution.set_umat_parameters(parameters)
         else:
             raise Exception(errormsg)
 
@@ -148,7 +163,7 @@ class Pyfem1dShell(cmd.Cmd):
         self.close()
         return True
 
-    def do_eof(self,arg):
+    def do_EOF(self,arg):
         self.close()
         return True
 
@@ -163,7 +178,7 @@ class Pyfem1dShell(cmd.Cmd):
             #self.cmdqueue.extend(f.read().splitlines())
 
     def precmd(self, line):
-        line = line.lower()
+        # line = line.lower()
         if self.file and 'playback' not in line:
             print(line, file=self.file)
         return line

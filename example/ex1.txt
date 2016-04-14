@@ -2,9 +2,9 @@ help
 
 bctype 2
 
-load triangle 10 0.005
+load Triangle 10 0.005
 
-umat maxwell 200 3000
+umat Maxwell 200 300
 
 solve
 plot

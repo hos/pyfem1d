@@ -1,16 +1,16 @@
 bctype 2
 
-# Add the example loading function
+# Add the example loading function and set load to the class name
 
-addload ex_load.py
+addloads example_load.py
 
-load ex_load 25 0.005 # It is not enought to add, it also needs to be set
+load ExampleLoad 25 0.005
 
-# Add the example umat function
+# Add the example umat function and set umat to the class name
 
-addumat ex_const.py
+addumats example_umat.py
 
-umat ex_const 200 3000 # ditto umat
+umat ExampleUmat 200 3000
 
 solve
 plot
