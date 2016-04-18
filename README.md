@@ -48,7 +48,7 @@ line:
 
 ```
 $ pyfem1d --help
-usage: main.py [-h] [-v] [input_file]
+usage: pyfem1d [-h] [-v] [input_file]
 
 positional arguments:
   input_file     input file

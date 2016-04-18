@@ -1,5 +1,4 @@
-from collections import OrderedDict
-import inspect
+import helper
 
 class Umat:
     parameter_values = []
@@ -20,29 +19,15 @@ class Umat:
     def set_parameter_values(self, values):
         pass
 
+    def __repr__(self):
+        result = ""
+        result += type(self).__name__ + "("
+        for n, (name, val) in enumerate(zip(self.parameter_names, self.parameter_values)):
+            result += name+"="+str(val)
+            if n != len(self.parameter_names)-1:
+                result += ", "
+        result += ")"
+        return result
+
 def deploy_umats(path):
-    local_ret = globals()
-    # local_ret = {}
-    global_ret = globals()
-    with open(path) as f:
-        code = compile(f.read(), path, 'exec')
-        exec(code, global_ret, local_ret)
-
-    # globals().update(global_ret)
-
-    # globals().update(local_ret)
-
-    result = {}
-    try:
-        for key, i in local_ret.items():
-            # print(key, i.__class__)
-            if inspect.isclass(i):
-                if issubclass(i, Umat) and key != "Umat":
-                    # print(key, i)
-                    result[key] = i
-    except Exception as e:
-        raise Exception("There was an error in the config %s:\n%s"%(path, str(e)))
-
-    # Sort the result dict according to the keys alphabetically
-    result = OrderedDict(sorted(result.items(), key=lambda t: t[0]))
-    return result
+    return helper.deploy_objects(path, Umat)

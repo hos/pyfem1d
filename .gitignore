@@ -4,3 +4,6 @@
 .*
 *~
 !.gitignore
+\#*\#
+pyfem1d.egg-info/
+misc/

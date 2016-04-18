@@ -15,7 +15,7 @@ class Pyfem1dShell(cmd.Cmd):
 
     def do_verbose(self, arg):
         '''Enable verbose output'''
-        self.analysis.execution.verbose = True
+        self.analysis.verbose = True
         #print(arg)
 
     # def do_gui(self, arg):
@@ -26,74 +26,77 @@ class Pyfem1dShell(cmd.Cmd):
         '''Set timestep size: dt value'''
         val, errormsg = parse_line(arg, type = float, n_args = 1)
         if not errormsg:
-            self.analysis.execution.timestep = val[0]
+            self.analysis.timestep = val[0]
         else:
-            raise Exception(errormsg)
+            print(errormsg)
 
     def do_nelem(self, arg):
         '''Set total number of elements with nelem(value)'''
         val, errormsg = parse_line(arg, type = int, n_args = 1)
         if not errormsg:
-            self.analysis.execution.number_of_elements = val[0]
+            self.analysis.number_of_elements = val[0]
         else:
-            raise Exception(errormsg)
+            print(errormsg)
 
     def do_tmax(self, arg):
         '''Set maximum time tmax(value)'''
         val, errormsg = parse_line(arg, type = float, n_args = 1)
         if not errormsg:
-            self.analysis.execution.maximum_time = val[0]
+            self.analysis.maximum_time = val[0]
         else:
-            raise Exception(errormsg)
+            print(errormsg)
 
     def do_bctype(self, arg):
         '''Set bc type with bctype(val), can be 0,1,2'''
         val, errormsg = parse_line(arg, type = int, n_args = 1)
         if not errormsg:
             if val[0] == 0 or val[0] == 1 or val[0] == 2:
-                self.analysis.execution.bctype = val[0]
+                self.analysis.bctype = val[0]
             else:
-                raise Exception("Error: bctype can only be one of 0, 1 and 2")
+                print("Error: bctype can only be one of 0, 1 and 2")
         else:
-            raise Exception(errormsg)
+            print(errormsg)
 
 
     def do_solve(self, arg):
         '''Start solution with solve()'''
-        self.analysis.solve()
+        try:
+            self.analysis.solve()
+        except Exception as e:
+            print(e)
 
     def do_plot(self, arg):
-        '''Plot the output stress file using gnuplot. optional argument: stressFile'''
+        '''Plot the output stress file using gnuplot. optional argument: stress_file'''
         val, errormsg = parse_line(arg, type = str)
         if len(val) == 0:
-            stressFile = self.analysis.execution.stressFile
+            stress_file = self.analysis.stress_file
         elif len(val) == 1:
-            stressFile = val[0]
+            stress_file = val[0]
         else:
-            raise Exception("Error: plot cannot receive more than 1 arguments")
+            print("Error: plot cannot receive more than 1 arguments")
 
-        self.analysis.execution.plotToWindow(stressFile=stressFile)
+        self.analysis.plotToWindow(stress_file=stress_file)
 
     def do_plotpdf(self, arg):
-        '''Plot the output stress file to a pdf file using gnuplot. optional arguments: plotFile stressFile'''
+        '''Plot the output stress file to a pdf file using gnuplot. optional arguments: plot_file stress_file'''
         val, errormsg = parse_line(arg, type = str)
         if len(val) == 0:
-            plotFile = self.analysis.execution.plotFile
-            stressFile = self.analysis.execution.stressFile
+            plot_file = self.analysis.plot_file
+            stress_file = self.analysis.stress_file
         elif len(val) == 1:
-            plotFile = val[0]
-            stressFile = self.analysis.execution.stressFile
+            plot_file = val[0]
+            stress_file = self.analysis.stress_file
         elif len(val) == 2:
-            plotFile = val[0]
-            stressFile = val[1]
+            plot_file = val[0]
+            stress_file = val[1]
         else:
-            raise Exception("Error: plot cannot receive more than 2 arguments")
+            print("Error: plot cannot receive more than 2 arguments")
 
-        self.analysis.execution.plotPdf(stressFile=stressFile, plotFile=plotFile)
+        self.analysis.plotPdf(stress_file=stress_file, plot_file=plot_file)
 
     def do_pwd(self, arg):
         'Prints current working directory'
-        print(self.analysis.execution.workingDirectory)
+        print(self.analysis.workingDirectory)
 
     #def do_cd(self, arg):
         #'Changes current working directory'
@@ -102,62 +105,77 @@ class Pyfem1dShell(cmd.Cmd):
         '''Add umat material: addumat exampleMaterial.py'''
         val, errormsg = parse_line(arg, type = str, n_args = 1)
         if not errormsg:
-            absModulePath = os.path.join(self.analysis.execution.workingDirectory, val[0])
-            self.analysis.execution.add_umats(absModulePath)
+            try:
+                path = os.path.join(self.analysis.workingDirectory, val[0])
+                self.analysis.add_umats(path)
+            except Exception as e:
+                print(e)
         else:
-            raise Exception(errormsg)
+            print(errormsg)
 
     def do_addloads(self, arg):
         '''Add loading function: addloading exampleLoading.py'''
         val, errormsg = parse_line(arg, type = str, n_args = 1)
         if not errormsg:
-            absModulePath = os.path.join(self.analysis.execution.workingDirectory, val[0])
-            self.analysis.execution.add_loads(absModulePath)
+            try:
+                path = os.path.join(self.analysis.workingDirectory, val[0])
+                self.analysis.add_loads(path)
+            except Exception as e:
+                print(e)
         else:
-            raise Exception(errormsg)
+            print(errormsg)
 
 
     def do_load(self, arg):
         '''Set load function: load triangle '''
         val, errormsg = parse_line(arg, type = str, n_args = "1+")
         if not errormsg:
-            self.analysis.execution.set_load(val[0])
+            self.analysis.set_load(val[0])
             if len(val) > 1:
                 parameters = tuple(map(float, val[1:]))
-                self.analysis.execution.set_load_parameters(parameters)
+                self.analysis.set_load_parameters(parameters)
         else:
-            raise Exception(errormsg)
+            print(errormsg)
 
     def do_listumats(self, arg):
         '''List all umats with the parameters and their values'''
-        self.list_umat_closure(self.analysis.execution.umat_dict)
+        for key, umat in self.analysis.umat_dict.items():
+            print(umat)
 
     def do_listloads(self, arg):
         '''List all loading functions with the parameters and their values'''
-        self.list_umat_closure(self.analysis.execution.load_dict)
+        for key, load in self.analysis.load_dict.items():
+            print(load)
 
+    def do_vars(self, arg):
+        '''List all variable values and current functions'''
+        print(self.analysis.header())
 
-    def list_umat_closure(self, dict_):
-        for key, umat in dict_.items():
-            print("  "+key+"(", end="")
-            for n, (name, val) in enumerate(zip(umat.parameter_names, umat.parameter_values)):
-                print(name+"="+str(val), end="")
-                if n != len(umat.parameter_names)-1:
-                    print(", ", end="")
-            print(")")
 
     def do_umat(self, arg):
         '''Set umat function: umat maxwell '''
         val, errormsg = parse_line(arg, type = str, n_args = "1+")
 
         if not errormsg:
-            self.analysis.execution.set_umat(val[0])
-            if len(val) > 1:
-                parameters = tuple(map(float, val[1:]))
-                self.analysis.execution.set_umat_parameters(parameters)
+            try:
+                self.analysis.set_umat(val[0])
+                if len(val) > 1:
+                    parameters = tuple(map(float, val[1:]))
+                    self.analysis.set_umat_parameters(parameters)
+            except Exception as e:
+                print(e)
         else:
-            raise Exception(errormsg)
+            print(errormsg)
 
+    def do_run(self, arg):
+        val, errormsg = parse_line(arg, type = str, n_args = 1)
+        if not errormsg:
+            try:
+                self.analysis.cmdShell.execFile(val[0])
+            except Exception as e:
+                print(e)
+        else:
+            print(errormsg)
 
     def do_q(self, arg):
         '''End session'''
@@ -203,7 +221,7 @@ class Pyfem1dShell(cmd.Cmd):
                     #print("Executing: "+line)
                     self.onecmd(line)
             except Exception as err:
-                raise Exception("line "+str(i)+": "+j+str(err))
+                print(err)
 
 
 def cleanLine(line):
