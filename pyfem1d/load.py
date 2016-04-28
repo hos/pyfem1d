@@ -1,4 +1,4 @@
-import helper
+from pyfem1d import helper
 
 class Load:
     parameter_names = []

@@ -7,7 +7,7 @@ here = path.abspath(path.dirname(__file__))
 setup(
     name="pyfem1d",
 
-    version="0.0.2",
+    version="0.0.2.post1",
 
     description="1d finite elements for testing material formulations",
 
@@ -19,7 +19,7 @@ setup(
 
     url = "https://github.com/hos/pyfem1d",
 
-    download_url = "https://github.com/hos/pyfem1d/tarball/0.0.2",
+    download_url = "https://github.com/hos/pyfem1d/tarball/0.0.2.post1",
 
     keywords = ["FEM", "materials", "mechanics"],
 
