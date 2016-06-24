@@ -10,17 +10,18 @@
 
 ## Installation
 
-To install the python package, run `install` on `setup.py` which is located
-in the project root directory
+Install it from PyPi:
+
+```
+pip install pyfem1d
+```
+
+To install from source:
 
 ```
 $ cd pyfem1d/
 $ python setup.py install
 ```
-
-This will install the `pyfem1d` module under
-`/usr/lib/python*/site-packages/pyfem1d`, as well as the `pyfem1d` script under
-`/usr/bin` which is the primary handle for this program.
 
 ## Usage
 
